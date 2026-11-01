@@ -73,7 +73,7 @@ Open `http://localhost:8000` in any modern web browser (Chrome, Edge, Safari, Fi
 
 1. **Step 1: The Problem (0:00 - 0:15)**
    - Click the **Compare Flash** tab.
-   - Point out the flat flash photo on the left: the weathered 1847 inscription is washed out and unreadable under direct flash. Mention that cemetery visitors often resort to damaging shaving cream or chalk to read it.
+   - Point out the flat flash photo on the left: the weathered 1847 inscription is washed out and hard to read under direct flash. Mention that cemetery visitors often resort to damaging shaving cream or chalk to read it.
 2. **Step 2: Virtual Raking Light (0:15 - 0:45)**
    - Click the **Relight** tab.
    - Drag the virtual torch dial from 12:00 around to 9:00 and 3:00 (or press Left/Right arrow keys).
