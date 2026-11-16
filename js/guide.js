@@ -61,10 +61,17 @@ class GuideModal {
     });
   }
 
+  setPageInert(flag) {
+    document.querySelectorAll('.app-header, .main-layout').forEach(el => {
+      el.inert = flag;
+    });
+  }
+
   showGuide() {
     this.lastFocusedElement = document.activeElement;
     if (this.modalGuide) {
       this.modalGuide.classList.remove('hidden');
+      this.setPageInert(true);
       if (this.btnCloseGuide) {
         this.btnCloseGuide.focus();
       }
@@ -72,9 +79,9 @@ class GuideModal {
   }
 
   hideGuide() {
-    if (this.modalGuide) {
-      this.modalGuide.classList.add('hidden');
-    }
+    if (!this.modalGuide || this.modalGuide.classList.contains('hidden')) return;
+    this.modalGuide.classList.add('hidden');
+    this.setPageInert(false);
     if (this.lastFocusedElement && typeof this.lastFocusedElement.focus === 'function') {
       this.lastFocusedElement.focus();
     }
@@ -96,6 +103,7 @@ class GuideModal {
 
     if (this.modalClock) {
       this.modalClock.classList.remove('hidden');
+      this.setPageInert(true);
       if (this.btnCloseClock) {
         this.btnCloseClock.focus();
       }
@@ -103,9 +111,9 @@ class GuideModal {
   }
 
   hideClockPicker() {
-    if (this.modalClock) {
-      this.modalClock.classList.add('hidden');
-    }
+    if (!this.modalClock || this.modalClock.classList.contains('hidden')) return;
+    this.modalClock.classList.add('hidden');
+    this.setPageInert(false);
     this.currentEditingIndex = null;
     this.onClockSelectedCallback = null;
     if (this.lastFocusedElement && typeof this.lastFocusedElement.focus === 'function') {

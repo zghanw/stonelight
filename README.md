@@ -2,6 +2,12 @@
 
 > Virtual raking light inscription transcription for weathered gravestones and historic monuments.
 
+**Live app: https://zghanw.github.io/stonelight/**
+
+1st place, Web Dev Open Track (Ages 18+), [International Digital Coding Competition 2026](https://digital-coding-competition.netlify.app/2026).
+
+![Stonelight showing the Chisel Relief shadow map of the sample headstone](docs/screenshot.png)
+
 Stonelight lets genealogists, cemetery preservationists, and Find a Grave volunteers read heavily eroded headstones directly in the browser by sweeping a virtual raking light across multi-angle phone-torch photos.
 
 No physical contact. No shaving cream. No tripods or RAW cameras. No cloud uploads. 100% private and works offline in the field.

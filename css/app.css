@@ -7,7 +7,7 @@
   --border-focus: #e09f3e;
   --text-main: #f0ede6;
   --text-muted: #9aa1af;
-  --text-dim: #6c7484;
+  --text-dim: #8b93a3;
   --accent-torch: #e09f3e;
   --accent-torch-glow: rgba(224, 159, 62, 0.35);
   --accent-primary: #3d79e6;
@@ -451,15 +451,15 @@ body {
 
 .clock-face-marks .mark {
   position: absolute;
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-dim);
 }
 
-.mark.m-12 { top: 4px; left: 50%; transform: translateX(-50%); }
-.mark.m-3  { right: 6px; top: 50%; transform: translateY(-50%); }
-.mark.m-6  { bottom: 4px; left: 50%; transform: translateX(-50%); }
-.mark.m-9  { left: 6px; top: 50%; transform: translateY(-50%); }
+.mark.m-12 { top: 8px; left: 50%; transform: translateX(-50%); }
+.mark.m-3  { right: 9px; top: 50%; transform: translateY(-50%); }
+.mark.m-6  { bottom: 8px; left: 50%; transform: translateX(-50%); }
+.mark.m-9  { left: 9px; top: 50%; transform: translateY(-50%); }
 
 .dial-center-stone {
   position: absolute;

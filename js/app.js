@@ -475,28 +475,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function handleUploadedFiles(files) {
     hidePhotoWarning();
 
+    const warnings = [];
+
     const nonImages = files.filter(f => !f.type.startsWith('image/') && !f.name.toLowerCase().endsWith('.heic'));
     if (nonImages.length > 0) {
       const names = nonImages.map(f => f.name).join(', ');
-      showPhotoWarning(`${names} is not a supported image file. Please upload JPEG or PNG photos.`);
+      warnings.push(`Skipped ${names}: not a supported image file. Please upload JPEG or PNG photos.`);
     }
 
     const hasHeic = files.some(f => f.name.toLowerCase().endsWith('.heic') || f.type === 'image/heic');
     if (hasHeic) {
-      showPhotoWarning('HEIC photos cannot be decoded directly by the browser. Please use JPEG or PNG (iPhone: Settings > Camera > Formats > Most Compatible).');
+      warnings.push('HEIC photos cannot be decoded directly by the browser. Please use JPEG or PNG (iPhone: Settings > Camera > Formats > Most Compatible).');
+      showPhotoWarning(warnings.join(' '));
       return;
     }
 
     const imageFiles = files.filter(f => f.type.startsWith('image/'));
     if (imageFiles.length === 0) {
-      if (nonImages.length === 0) {
-        showPhotoWarning('No valid image files were selected.');
-      }
+      showPhotoWarning(warnings.join(' ') || 'No valid image files were selected.');
       return;
     }
 
     if (imageFiles.length < 3) {
-      showPhotoWarning('For best raking synthesis, 4 to 8 photos taken at different torch angles are recommended.');
+      warnings.push('For best raking synthesis, 4 to 8 photos taken at different torch angles are recommended.');
+    }
+
+    if (warnings.length > 0) {
+      showPhotoWarning(warnings.join(' '));
     }
 
     showLoading('Analyzing torch directions for uploaded photos...');

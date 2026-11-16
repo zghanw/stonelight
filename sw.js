@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stonelight-v1';
+const CACHE_NAME = 'stonelight-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -39,10 +39,19 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+  if (e.request.method !== 'GET') return;
   e.respondWith(
-    caches.match(e.request).then((res) => {
-      return res || fetch(e.request).catch(() => caches.match('./index.html'));
-    })
+    fetch(e.request)
+      .then((res) => {
+        if (res.ok && e.request.url.startsWith(self.location.origin)) {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, copy));
+        }
+        return res;
+      })
+      .catch(() => {
+        return caches.match(e.request).then((res) => res || caches.match('./index.html'));
+      })
   );
 });
 
