@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="favicon.svg" width="96" height="96" alt="Stonelight logo">
+</p>
+
 # Stonelight
 
 > Virtual raking light inscription transcription for weathered gravestones and historic monuments.

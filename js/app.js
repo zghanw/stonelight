@@ -198,6 +198,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (dial) {
     dial.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      dial.focus();
       isDraggingDial = true;
       dismissStageHint();
       updateDialFromPointer(e);

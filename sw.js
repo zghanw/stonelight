@@ -1,9 +1,11 @@
-const CACHE_NAME = 'stonelight-v3';
+const CACHE_NAME = 'stonelight-v4';
 const ASSETS = [
   './',
   './index.html',
   './app.html',
   './manifest.webmanifest',
+  './favicon.svg',
+  './icons/icon-192.png',
   './css/base.css',
   './css/landing.css',
   './css/app.css',
