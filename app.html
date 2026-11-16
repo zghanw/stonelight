@@ -28,13 +28,11 @@
     </a>
 
     <div class="header-actions">
-      <button id="btn-load-sample" class="btn btn-secondary" title="Load calibrated reference sample stone">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-        </svg>
-        Sample stone
-      </button>
+      <label class="switch" for="toggle-sample" title="Show or hide the sample stone. Your own work is kept separately.">
+        <input type="checkbox" id="toggle-sample" role="switch" checked>
+        <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+        <span class="switch-label">Sample<span class="switch-label-rest"> stone</span></span>
+      </label>
       <button id="btn-open-upload" class="btn btn-secondary">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
@@ -125,6 +123,12 @@
       <div class="canvas-viewport" id="viewport-container">
         <canvas id="main-canvas" width="840" height="1080"></canvas>
         <p id="stage-hint" class="stage-hint">Drag across the stone to move the light</p>
+
+        <div id="empty-state" class="empty-state hidden">
+          <p class="empty-title">Your stone goes here</p>
+          <p class="empty-sub">Add 4 to 8 torch photos of one stone to start. Your photos and transcription are kept apart from the sample.</p>
+          <button type="button" id="btn-empty-add" class="btn btn-primary">Add my photos</button>
+        </div>
 
         <div id="compare-overlay" class="compare-overlay hidden">
           <div class="compare-divider" id="compare-handle">
@@ -256,6 +260,7 @@
       <div class="sidebar-content">
         <div id="side-pane-transcribe" class="side-pane active">
           <form id="transcription-form" class="card-form">
+            <p id="sample-note" class="sample-note">This is the sample record, so changes here are not saved. Turn off Sample stone to work on your own.</p>
             <div class="form-group">
               <label for="f-name">Name of deceased</label>
               <input type="text" id="f-name" class="form-input" placeholder="e.g. ELEANOR C. VANE" value="ELEANOR C. VANE">
@@ -359,9 +364,8 @@ Erected by her bereaved husband & children</textarea>
 
           <div class="photo-tools">
             <button id="btn-auto-angles" class="btn btn-secondary btn-sm" title="Analyze brightness centroid to estimate torch angles">
-              Auto-Detect Angles
+              Detect angles
             </button>
-            <button id="btn-reset-photos" class="btn btn-subtle btn-sm text-danger">Reset to Sample</button>
           </div>
 
           <div id="photo-warning-box" class="warning-banner hidden"></div>

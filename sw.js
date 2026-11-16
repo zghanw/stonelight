@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stonelight-v4';
+const CACHE_NAME = 'stonelight-v5';
 const ASSETS = [
   './',
   './index.html',

@@ -25,7 +25,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     { hour: 'flash', src: 'sample/flash.jpg', name: 'flash.jpg' }
   ];
 
-  let currentPhotoItems = [...samplePhotoItems];
+  const samplePrefKey = 'stonelight_sample';
+  let currentPhotoItems = [];
+  let myPhotoItems = [];
+  let sampleOn = true;
+
+  try {
+    sampleOn = localStorage.getItem(samplePrefKey) !== 'off';
+  } catch (e) {
+  }
+
+  function freshSampleItems() {
+    return samplePhotoItems.map(item => ({ ...item }));
+  }
 
   const dial = document.getElementById('orbit-dial');
   const dialNeedle = document.getElementById('dial-needle');
@@ -61,8 +73,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const fileInput = document.getElementById('file-input');
   const btnBrowseFiles = document.getElementById('btn-browse-files');
   const btnAutoAngles = document.getElementById('btn-auto-angles');
-  const btnResetPhotos = document.getElementById('btn-reset-photos');
-  const btnLoadSample = document.getElementById('btn-load-sample');
+  const toggleSample = document.getElementById('toggle-sample');
+  const emptyState = document.getElementById('empty-state');
+  const btnEmptyAdd = document.getElementById('btn-empty-add');
+  const sampleNote = document.getElementById('sample-note');
   const btnOpenUpload = document.getElementById('btn-open-upload');
   const btnSaveImage = document.getElementById('btn-save-image');
 
@@ -90,7 +104,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function loadPhotoSet(items) {
     showLoading('Loading photo set...');
     currentPhotoItems = items;
+    if (!sampleOn) myPhotoItems = items;
     shadowEngine.resetCache();
+
+    const isEmpty = items.length === 0;
+    if (emptyState) emptyState.classList.toggle('hidden', !isEmpty);
+    canvas.classList.toggle('hidden', isEmpty);
+    if (stageHint) stageHint.classList.toggle('hidden', isEmpty || currentView !== 'relight');
 
     try {
       await engine.loadImages(items);
@@ -101,6 +121,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     } finally {
       hideLoading();
     }
+  }
+
+  async function showWorkspace(useSample) {
+    sampleOn = useSample;
+    try {
+      localStorage.setItem(samplePrefKey, useSample ? 'on' : 'off');
+    } catch (e) {
+    }
+
+    if (sampleNote) sampleNote.classList.toggle('hidden', !useSample);
+    if (useSample) {
+      transcribeManager.showSample();
+    } else {
+      transcribeManager.showMine();
+    }
+
+    if (toggleSample) {
+      toggleSample.checked = useSample;
+      toggleSample.disabled = true;
+    }
+    await loadPhotoSet(useSample ? freshSampleItems() : myPhotoItems);
+    if (toggleSample) toggleSample.disabled = false;
   }
 
   function updatePhotoGrid() {
@@ -336,7 +378,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (filterControls) filterControls.classList.add('hidden');
     if (compareOverlay) compareOverlay.classList.add('hidden');
 
-    if (stageHint) stageHint.classList.toggle('hidden', view !== 'relight');
+    if (stageHint) stageHint.classList.toggle('hidden', view !== 'relight' || engine.photos.length === 0);
     canvas.style.cursor = view === 'relight' ? 'crosshair' : 'default';
 
     if (view === 'relight') {
@@ -371,6 +413,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   function renderCurrentView() {
+    if (engine.photos.length === 0) return;
+
     if (currentView === 'relight') {
       engine.render(angleRad, currentContrast, currentGraze);
     } else if (currentView === 'shadowmap') {
@@ -463,20 +507,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (btnOpenUpload) {
     btnOpenUpload.addEventListener('click', () => {
       switchToTab('photos');
+      if (sampleOn) showWorkspace(false);
     });
   }
 
-  if (btnLoadSample) {
-    btnLoadSample.addEventListener('click', () => {
-      transcribeManager.loadSampleRecord();
-      loadPhotoSet(samplePhotoItems);
+  if (toggleSample) {
+    toggleSample.addEventListener('change', () => {
+      showWorkspace(toggleSample.checked);
     });
   }
 
-  if (btnResetPhotos) {
-    btnResetPhotos.addEventListener('click', () => {
-      transcribeManager.loadSampleRecord();
-      loadPhotoSet(samplePhotoItems);
+  if (btnEmptyAdd && fileInput) {
+    btnEmptyAdd.addEventListener('click', () => {
+      switchToTab('photos');
+      fileInput.click();
     });
   }
 
@@ -573,9 +617,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
 
-    transcribeManager.clearSampleDataIfPresent();
+    myPhotoItems = newItems;
     switchToTab('photos');
-    await loadPhotoSet(newItems);
+    await showWorkspace(false);
   }
 
   function readFileAsDataURL(file) {
@@ -664,6 +708,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (btnSaveImage) {
     btnSaveImage.addEventListener('click', () => {
+      if (engine.photos.length === 0) return;
       const dataUrl = engine.getSnapshotURL();
       const a = document.createElement('a');
       a.href = dataUrl;
@@ -679,6 +724,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  await loadPhotoSet(samplePhotoItems);
+  await showWorkspace(sampleOn);
   updateDialAngle((5 * Math.PI) / 6);
 });

@@ -3,9 +3,9 @@ class TranscriptionManager {
     this.engine = engine;
     this.storageKey = 'stonelight_session_v1';
     this.sampleName = 'ELEANOR C. VANE';
+    this.persist = true;
     this.initElements();
     this.bindEvents();
-    this.loadSavedData();
   }
 
   initElements() {
@@ -103,9 +103,9 @@ class TranscriptionManager {
     if (this.inputNotes && data.notes !== undefined) this.inputNotes.value = data.notes;
   }
 
-  loadSampleRecord() {
-    this.setData({
-      name: 'ELEANOR C. VANE',
+  sampleRecord() {
+    return {
+      name: this.sampleName,
       birth: '1809',
       death: 'October 14, 1847',
       age: '38 Years',
@@ -114,29 +114,36 @@ class TranscriptionManager {
       cemetery: 'St. Peter Old Burying Ground',
       material: 'Slate',
       notes: 'Erosion along lower epitaph lines; recovered via raking light at 11:00 and 3:00 angles.'
-    });
-    this.saveToStorage();
+    };
   }
 
-  clearSampleDataIfPresent() {
-    const current = this.getData();
-    if (current.name === this.sampleName) {
-      this.setData({
-        name: '',
-        birth: '',
-        death: '',
-        age: '',
-        relationship: '',
-        inscription: '',
-        cemetery: '',
-        material: 'Slate',
-        notes: ''
-      });
-      this.saveToStorage();
-    }
+  blankRecord() {
+    return {
+      name: '',
+      birth: '',
+      death: '',
+      age: '',
+      relationship: '',
+      inscription: '',
+      cemetery: '',
+      material: 'Slate',
+      notes: ''
+    };
+  }
+
+  showSample() {
+    this.persist = false;
+    this.setData(this.sampleRecord());
+  }
+
+  showMine() {
+    this.persist = true;
+    this.setData(this.blankRecord());
+    this.loadSavedData();
   }
 
   saveToStorage() {
+    if (!this.persist) return;
     try {
       const data = this.getData();
       localStorage.setItem(this.storageKey, JSON.stringify(data));
@@ -149,6 +156,10 @@ class TranscriptionManager {
       const raw = localStorage.getItem(this.storageKey);
       if (raw) {
         const parsed = JSON.parse(raw);
+        if (parsed.name === this.sampleName) {
+          localStorage.removeItem(this.storageKey);
+          return;
+        }
         this.setData(parsed);
       }
     } catch (e) {
@@ -189,6 +200,11 @@ class TranscriptionManager {
     if (this.prMaterial) this.prMaterial.innerText = data.material || '-';
     if (this.prNotes) this.prNotes.innerText = data.notes || '-';
 
+    const imagesRow = document.querySelector('.print-images-row');
+    const hasPhotos = this.engine.photos.length > 0;
+    if (imagesRow) imagesRow.classList.toggle('hidden', !hasPhotos);
+    if (!hasPhotos) return;
+
     const currentCanvasUrl = this.engine.getSnapshotURL();
     if (this.prImgRelit) this.prImgRelit.src = currentCanvasUrl;
 
@@ -213,18 +229,8 @@ class TranscriptionManager {
 
   resetForm() {
     if (confirm('Clear transcription fields?')) {
-      this.setData({
-        name: '',
-        birth: '',
-        death: '',
-        age: '',
-        relationship: '',
-        inscription: '',
-        cemetery: '',
-        material: 'Slate',
-        notes: ''
-      });
-      localStorage.removeItem(this.storageKey);
+      this.setData(this.blankRecord());
+      if (this.persist) localStorage.removeItem(this.storageKey);
     }
   }
 }
