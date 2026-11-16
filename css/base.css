@@ -1,0 +1,89 @@
+:root {
+  --paper: #e9e8e4;
+  --paper-raised: #f4f3f0;
+  --paper-sunk: #dcdbd6;
+  --ink: #121311;
+  --ink-soft: #454641;
+  --ink-faint: #62635d;
+  --stone: #7d7c75;
+  --line: rgba(18, 19, 17, 0.16);
+  --line-strong: rgba(18, 19, 17, 0.44);
+  --night: #0f100e;
+  --night-raised: #1b1c19;
+  --on-night: #f1f0ec;
+  --on-night-soft: #adada6;
+  --line-night: rgba(241, 240, 236, 0.18);
+  --signal: #d9431b;
+  --signal-deep: #b3330f;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --gutter: clamp(16px, 4vw, 56px);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--ink);
+  background-color: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+img, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--signal-deep);
+  outline-offset: 3px;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 100;
+  padding: 10px 16px;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 12px;
+}
+
+.hidden {
+  display: none !important;
+}

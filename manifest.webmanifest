@@ -2,10 +2,10 @@
   "name": "Stonelight Gravestone Transcription",
   "short_name": "Stonelight",
   "description": "Virtual raking light transcription for worn gravestones and historic inscriptions",
-  "start_url": "./index.html",
+  "start_url": "./app.html",
   "display": "standalone",
-  "background_color": "#111419",
-  "theme_color": "#171b22",
+  "background_color": "#e9e8e4",
+  "theme_color": "#e9e8e4",
   "icons": [
     {
       "src": "sample/torch_12.jpg",

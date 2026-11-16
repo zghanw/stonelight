@@ -51,12 +51,23 @@ class RelightEngine {
           angleRad: rad,
           name: item.name,
           element: img,
-          pixels: imgData.data
+          pixels: imgData.data,
+          meanLum: this.meanLuminance(imgData.data)
         });
       }
     }
 
     this.photos.sort((a, b) => a.angleRad - b.angleRad);
+  }
+
+  meanLuminance(pixels) {
+    let sum = 0;
+    let count = 0;
+    for (let i = 0; i < pixels.length; i += 64) {
+      sum += 0.299 * pixels[i] + 0.587 * pixels[i + 1] + 0.114 * pixels[i + 2];
+      count++;
+    }
+    return count ? sum / count : 128;
   }
 
   loadImageElement(src) {
@@ -135,7 +146,9 @@ class RelightEngine {
     }
 
     const activePairs = [];
+    let pivot = 0;
     for (let i = 0; i < weights.length; i++) {
+      pivot += weights[i] * this.photos[i].meanLum;
       if (weights[i] > 0.005) {
         activePairs.push({
           w: weights[i],
@@ -144,7 +157,9 @@ class RelightEngine {
       }
     }
 
-    const cFactor = contrast;
+    const gain = Math.min(6, Math.max(1, 118 / Math.max(pivot, 1)));
+    const cFactor = contrast * gain;
+    const offset = pivot * gain;
     const activeCount = activePairs.length;
 
     for (let p = 0; p < len; p += 4) {
@@ -161,9 +176,9 @@ class RelightEngine {
         b += px[p + 2] * w;
       }
 
-      r = (r - 128) * cFactor + 128;
-      g = (g - 128) * cFactor + 128;
-      b = (b - 128) * cFactor + 128;
+      r = (r - pivot) * cFactor + offset;
+      g = (g - pivot) * cFactor + offset;
+      b = (b - pivot) * cFactor + offset;
 
       out[p] = r < 0 ? 0 : (r > 255 ? 255 : r);
       out[p + 1] = g < 0 ? 0 : (g > 255 ? 255 : g);

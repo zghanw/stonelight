@@ -2,11 +2,11 @@
 
 > Virtual raking light inscription transcription for weathered gravestones and historic monuments.
 
-**Live app: https://zghanw.github.io/stonelight/**
+**Live site: https://zghanw.github.io/stonelight/** | **Open the app: https://zghanw.github.io/stonelight/app.html**
 
 1st place, Web Dev Open Track (Ages 18+), [International Digital Coding Competition 2026](https://digital-coding-competition.netlify.app/2026).
 
-![Stonelight showing the Chisel Relief shadow map of the sample headstone](docs/screenshot.png)
+![The Stonelight landing page, with the sample headstone lit from the cursor](docs/screenshot.png)
 
 Stonelight lets genealogists, cemetery preservationists, and Find a Grave volunteers read heavily eroded headstones directly in the browser by sweeping a virtual raking light across multi-angle phone-torch photos.
 
@@ -55,6 +55,8 @@ When you drag the torch dial, Stonelight calculates angular cosine weights betwe
 
 To generate the Shadow Map, the engine processes all photos pixel-by-pixel to measure the maximum-to-minimum luminance variation across all lighting angles. Because carved chisel cuts experience deep directional shadows while flat stone surfaces remain relatively constant, this isolates physical surface relief from background stone grain—revealing the entire inscription at once as a 3D chisel relief or an archival slate rubbing.
 
+The landing page runs a live demo of the same idea. It solves a slope for every pixel from the eight sample photos by least squares (photometric stereo), then shades that surface from wherever your cursor is. Hold the light head-on and the stone goes flat, exactly like a flash photo. Lower it to the side and the inscription appears.
+
 ---
 
 ## Running Locally
@@ -75,21 +77,21 @@ Open `http://localhost:8000` in any modern web browser (Chrome, Edge, Safari, Fi
 
 ---
 
-## 2-Minute Demo for Judges
+## Two-Minute Tour
 
 1. **Step 1: The Problem (0:00 - 0:15)**
-   - Click the **Compare Flash** tab.
+   - Open the app and click the **Compare** tab.
    - Point out the flat flash photo on the left: the weathered 1847 inscription is washed out and hard to read under direct flash. Mention that cemetery visitors often resort to damaging shaving cream or chalk to read it.
 2. **Step 2: Virtual Raking Light (0:15 - 0:45)**
    - Click the **Relight** tab.
-   - Drag the virtual torch dial from 12:00 around to 9:00 and 3:00 (or press Left/Right arrow keys).
+   - Drag across the stone, or move the torch dial from 12:00 around to 9:00 and 3:00 (or press Left/Right arrow keys).
    - Watch the chisel cuts of *"ELEANOR C. VANE"*, *"OCTOBER 14, 1847"*, and the lower epitaph spring into sharp shadow relief as the virtual beam sweeps across.
 3. **Step 3: All-Angle Shadow Map (0:45 - 1:10)**
-   - Click the **Shadow Map** tab and toggle **Chisel Relief** or **Digital Slate Rubbing**.
+   - Click the **Shadow map** tab and toggle **Chisel relief** or **Slate rubbing**.
    - Show how combining the multi-directional shadow data reveals all horizontal and vertical chisel strokes simultaneously.
 4. **Step 4: Archival Transcription Card (1:10 - 1:40)**
-   - Switch to the **Transcription Card** tab on the right.
-   - Click **Print / Save Record (PDF)** to preview the clean, single-page archival preservation record with side-by-side stone images ready for church registers.
+   - Switch to the **Transcription** tab on the right.
+   - Click **Print or save as PDF** to preview the clean, single-page archival preservation record with side-by-side stone images ready for church registers.
 5. **Step 5: Privacy & Offline Independence (1:40 - 2:00)**
    - Disconnect Wi-Fi or enable Airplane Mode.
    - Reload the page: Stonelight continues running completely offline via its Service Worker. No photos are ever uploaded to any server.

@@ -38,6 +38,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const compareHandle = document.getElementById('compare-handle');
   const loadingSpinner = document.getElementById('loading-spinner');
   const loadingText = document.getElementById('loading-text');
+  const stageHint = document.getElementById('stage-hint');
+  let isDraggingStone = false;
 
   const viewTabs = document.querySelectorAll('.view-tab');
   const relightControls = document.getElementById('relight-controls');
@@ -197,6 +199,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (dial) {
     dial.addEventListener('mousedown', (e) => {
       isDraggingDial = true;
+      dismissStageHint();
       updateDialFromPointer(e);
     });
 
@@ -215,6 +218,38 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   }
+
+  function updateDialFromStone(e) {
+    const rect = canvas.getBoundingClientRect();
+    const dx = e.clientX - (rect.left + rect.width / 2);
+    const dy = (rect.top + rect.height / 2) - e.clientY;
+    if (Math.hypot(dx, dy) < 8) return;
+    updateDialAngle(Math.atan2(dy, dx));
+  }
+
+  function dismissStageHint() {
+    if (stageHint) stageHint.classList.add('is-done');
+  }
+
+  canvas.addEventListener('pointerdown', (e) => {
+    if (currentView !== 'relight') return;
+    isDraggingStone = true;
+    dismissStageHint();
+    updateDialFromStone(e);
+    canvas.setPointerCapture(e.pointerId);
+  });
+
+  canvas.addEventListener('pointermove', (e) => {
+    if (isDraggingStone) updateDialFromStone(e);
+  });
+
+  canvas.addEventListener('pointerup', () => {
+    isDraggingStone = false;
+  });
+
+  canvas.addEventListener('pointercancel', () => {
+    isDraggingStone = false;
+  });
 
   window.addEventListener('mousemove', (e) => {
     if (isDraggingDial) {
@@ -299,6 +334,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (filterControls) filterControls.classList.add('hidden');
     if (compareOverlay) compareOverlay.classList.add('hidden');
 
+    if (stageHint) stageHint.classList.toggle('hidden', view !== 'relight');
+    canvas.style.cursor = view === 'relight' ? 'crosshair' : 'default';
+
     if (view === 'relight') {
       if (relightControls) relightControls.classList.remove('hidden');
     } else if (view === 'shadowmap') {
@@ -373,14 +411,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function updateCompareDivider(clientX) {
     const vp = document.getElementById('viewport-container');
-    const rect = vp.getBoundingClientRect();
+    const vpRect = vp.getBoundingClientRect();
+    const rect = canvas.getBoundingClientRect();
     let pos = (clientX - rect.left) / rect.width;
     if (pos < 0.05) pos = 0.05;
     if (pos > 0.95) pos = 0.95;
     compareSplit = pos;
 
     if (compareHandle) {
-      compareHandle.style.left = `${(pos * 100).toFixed(1)}%`;
+      compareHandle.style.left = `${(rect.left - vpRect.left + pos * rect.width).toFixed(1)}px`;
     }
 
     renderCompareView();
@@ -639,5 +678,5 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   await loadPhotoSet(samplePhotoItems);
-  updateDialAngle(Math.PI / 2);
+  updateDialAngle((5 * Math.PI) / 6);
 });
