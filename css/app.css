@@ -380,14 +380,42 @@ body.app {
   color: var(--on-night-soft);
 }
 
-.empty-state .btn-primary {
+.empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
   margin-top: 8px;
+}
+
+.empty-state .btn {
   background-color: var(--on-night);
+  border-color: var(--on-night);
   color: var(--ink);
 }
 
-.empty-state .btn-primary:hover {
+.empty-state .btn:hover {
   background-color: #ffffff;
+}
+
+.btn.only-touch {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .btn.only-touch {
+    display: inline-flex;
+  }
+
+  .empty-state .btn-secondary {
+    background-color: transparent;
+    border-color: var(--line-night);
+    color: var(--on-night);
+  }
+
+  .empty-state .btn-secondary:hover {
+    background-color: rgba(241, 240, 236, 0.1);
+  }
 }
 
 .compare-overlay {
@@ -907,10 +935,14 @@ input[type="range"]::-moz-range-thumb {
 
 .photo-tools {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
   margin-top: 14px;
+}
+
+#btn-clear-photos {
+  margin-left: auto;
 }
 
 .warning-banner {
@@ -981,6 +1013,25 @@ input[type="range"]::-moz-range-thumb {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   cursor: pointer;
+}
+
+.photo-remove-btn {
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line-night);
+  border-radius: 4px;
+  background-color: rgba(15, 16, 14, 0.78);
+  color: var(--on-night);
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.guide-note {
+  margin-bottom: 18px;
 }
 
 .modal-backdrop {

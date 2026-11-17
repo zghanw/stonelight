@@ -126,8 +126,11 @@
 
         <div id="empty-state" class="empty-state hidden">
           <p class="empty-title">Your stone goes here</p>
-          <p class="empty-sub">Add 4 to 8 torch photos of one stone to start. Your photos and transcription are kept apart from the sample.</p>
-          <button type="button" id="btn-empty-add" class="btn btn-primary">Add my photos</button>
+          <p class="empty-sub">Add 4 to 8 torch photos of one stone to start. They are saved on this device, apart from the sample.</p>
+          <div class="empty-actions">
+            <button type="button" id="btn-empty-camera" class="btn btn-primary only-touch">Take a photo</button>
+            <button type="button" id="btn-empty-add" class="btn btn-secondary">Add my photos</button>
+          </div>
         </div>
 
         <div id="compare-overlay" class="compare-overlay hidden">
@@ -357,15 +360,19 @@ Erected by her bereaved husband & children</textarea>
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
               </svg>
             </div>
-            <p class="drop-title">Drop 4 to 8 photos of one stone</p>
-            <p class="drop-sub">Phone torch photos taken around the clock face</p>
-            <button type="button" id="btn-browse-files" class="btn btn-secondary btn-sm">Browse Files</button>
+            <p class="drop-title">Add 4 to 8 photos of one stone</p>
+            <p class="drop-sub">Torch photos taken around the clock face. New photos are added to your set.</p>
+            <button type="button" id="btn-browse-files" class="btn btn-secondary btn-sm">Choose photos</button>
           </div>
 
+          <input type="file" id="camera-input" accept="image/*" capture="environment" class="file-input-hidden">
+
           <div class="photo-tools">
+            <button type="button" id="btn-take-photo" class="btn btn-primary btn-sm only-touch">Take photo</button>
             <button id="btn-auto-angles" class="btn btn-secondary btn-sm" title="Analyze brightness centroid to estimate torch angles">
               Detect angles
             </button>
+            <button type="button" id="btn-clear-photos" class="btn btn-subtle btn-sm text-danger hidden">Clear photos</button>
           </div>
 
           <div id="photo-warning-box" class="warning-banner hidden"></div>
@@ -388,6 +395,8 @@ Erected by her bereaved husband & children</textarea>
         </button>
       </div>
       <div class="modal-body guide-content">
+        <p class="sample-note guide-note">Before you leave home, open Stonelight once and add it to your Home Screen. It then works at the graveside with no signal.</p>
+
         <div class="guide-step">
           <div class="step-num">1</div>
           <div class="step-text">
@@ -516,6 +525,7 @@ Erected by her bereaved husband & children</textarea>
   <script src="js/shadowmap.js"></script>
   <script src="js/transcribe.js"></script>
   <script src="js/guide.js"></script>
+  <script src="js/photostore.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

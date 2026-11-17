@@ -60,7 +60,7 @@ The Association for Gravestone Studies recommends raking light and digital proce
 
 ## Who it is for
 
-| | |
+| For | What they get |
 | --- | --- |
 | **Family historians** | One name and two dates, read correctly, without waiting on a forum. |
 | **Find a Grave volunteers** | A repeatable way to read a stone, and a transcription ready to paste. |
@@ -76,7 +76,7 @@ The Association for Gravestone Studies recommends raking light and digital proce
 | **Filters** | Invert, emboss, high-pass and contrast, for when you only have one photo. |
 | **Transcription card** | Name, dates, inscription and notes, with `-` for letters that are gone. Saved on your device. |
 | **Copy and print** | One click copies the record for Find a Grave. Print it, or save it as a PDF with both stone images. |
-| **Your own photos** | Drop in 4 to 8 photos. Torch angles are estimated for you and can be corrected on a clock face. |
+| **Your own photos** | Add 4 to 8 photos from the gallery, or take them with the camera on a phone or tablet. They are saved on your device. Torch angles are estimated for you and can be corrected on a clock face. |
 | **Capture guide** | How to prop the phone, lock exposure and sweep the torch at the stone. |
 | **Sample stone** | A simulated 1847 slate headstone you can switch on or off. Your own photos and transcription are kept separately. |
 | **Offline and private** | Installs as an app and runs with no connection. No tracking, no accounts, no uploads. |
@@ -135,6 +135,7 @@ js/relight.js     Angle-weighted relighting and single-photo filters
 js/shadowmap.js   Chisel relief, slate rubbing and variance maps
 js/transcribe.js  Transcription card, copy, print and export
 js/guide.js       Capture guide and clock picker dialogs
+js/photostore.js  Saves your photos on the device
 js/landing.js     Surface solve and the live demo
 sample/           The simulated sample stone
 sw.js             Offline cache

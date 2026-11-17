@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const shadowEngine = new ShadowMapEngine(engine);
   const transcribeManager = new TranscriptionManager(engine);
   const guideManager = new GuideModal();
+  const photoStore = new PhotoStore();
 
   let currentView = 'relight';
   let angleRad = Math.PI / 2;
@@ -76,6 +77,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const toggleSample = document.getElementById('toggle-sample');
   const emptyState = document.getElementById('empty-state');
   const btnEmptyAdd = document.getElementById('btn-empty-add');
+  const btnEmptyCamera = document.getElementById('btn-empty-camera');
+  const cameraInput = document.getElementById('camera-input');
+  const btnTakePhoto = document.getElementById('btn-take-photo');
+  const btnClearPhotos = document.getElementById('btn-clear-photos');
   const sampleNote = document.getElementById('sample-note');
   const btnOpenUpload = document.getElementById('btn-open-upload');
   const btnSaveImage = document.getElementById('btn-save-image');
@@ -101,10 +106,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  async function setMyPhotos(items) {
+    myPhotoItems = items;
+    const saved = await photoStore.save(items);
+    if (!saved) {
+      showPhotoWarning('These photos could not be saved on this device, so they will be lost if the page reloads.');
+    }
+  }
+
   async function loadPhotoSet(items) {
     showLoading('Loading photo set...');
     currentPhotoItems = items;
-    if (!sampleOn) myPhotoItems = items;
+    if (!sampleOn && items !== myPhotoItems) setMyPhotos(items);
     shadowEngine.resetCache();
 
     const isEmpty = items.length === 0;
@@ -151,6 +164,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const validTorchPhotos = currentPhotoItems.filter(p => p.hour !== 'flash');
     if (photoCountBadge) photoCountBadge.innerText = String(validTorchPhotos.length);
+    if (btnClearPhotos) btnClearPhotos.classList.toggle('hidden', sampleOn || currentPhotoItems.length === 0);
 
     currentPhotoItems.forEach((item, idx) => {
       const card = document.createElement('div');
@@ -172,6 +186,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       card.appendChild(img);
       card.appendChild(badge);
       card.appendChild(editBtn);
+
+      if (!sampleOn) {
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'photo-remove-btn';
+        removeBtn.setAttribute('aria-label', `Remove ${item.name || 'photo'}`);
+        removeBtn.innerText = '×';
+        removeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          loadPhotoSet(currentPhotoItems.filter((_, i) => i !== idx));
+        });
+        card.appendChild(removeBtn);
+      }
 
       card.addEventListener('click', () => {
         guideManager.openClockPicker(idx, item.hour, (targetIdx, newHour) => {
@@ -524,6 +551,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  if (cameraInput) {
+    [btnTakePhoto, btnEmptyCamera].forEach((btn) => {
+      if (btn) btn.addEventListener('click', () => cameraInput.click());
+    });
+
+    cameraInput.addEventListener('change', () => {
+      if (cameraInput.files && cameraInput.files.length > 0) {
+        handleUploadedFiles(Array.from(cameraInput.files));
+      }
+      cameraInput.value = '';
+    });
+  }
+
+  if (btnClearPhotos) {
+    btnClearPhotos.addEventListener('click', () => {
+      if (sampleOn) return;
+      if (confirm('Remove all of your photos? Your transcription is kept.')) {
+        loadPhotoSet([]);
+      }
+    });
+  }
+
   if (btnBrowseFiles && fileInput) {
     btnBrowseFiles.addEventListener('click', () => fileInput.click());
   }
@@ -554,6 +603,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (fileInput.files && fileInput.files.length > 0) {
         handleUploadedFiles(Array.from(fileInput.files));
       }
+      fileInput.value = '';
     });
   }
 
@@ -581,22 +631,29 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    if (imageFiles.length < 3) {
-      warnings.push('For best raking synthesis, 4 to 8 photos taken at different torch angles are recommended.');
-    }
-
-    if (warnings.length > 0) {
-      showPhotoWarning(warnings.join(' '));
-    }
-
-    showLoading('Analyzing torch directions for uploaded photos...');
+    showLoading('Adding photos...');
 
     const newItems = [];
-    const usedHours = new Set();
+    const unreadable = [];
+    const usedHours = new Set(myPhotoItems.filter(p => p.hour !== 'flash').map(p => p.hour));
+    let skippedForSpace = false;
 
     for (let i = 0; i < imageFiles.length; i++) {
       const f = imageFiles[i];
-      const dataUrl = await readFileAsDataURL(f);
+
+      if (usedHours.size >= 12) {
+        skippedForSpace = true;
+        break;
+      }
+
+      let dataUrl;
+      try {
+        dataUrl = await fileToDataURL(f);
+      } catch (e) {
+        unreadable.push(f.name);
+        continue;
+      }
+
       let detectedHour = await estimateImageLightAngle(dataUrl);
 
       if (usedHours.has(detectedHour)) {
@@ -617,17 +674,47 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
 
-    myPhotoItems = newItems;
-    switchToTab('photos');
-    await showWorkspace(false);
+    if (unreadable.length > 0) {
+      warnings.push(`Could not read ${unreadable.join(', ')}.`);
+    }
+    if (skippedForSpace) {
+      warnings.push('A stone can hold up to 12 torch photos, so the rest were skipped.');
+    }
+    if (usedHours.size < 3) {
+      warnings.push('Add at least 4 photos taken at different torch angles for a good result.');
+    }
+
+    if (newItems.length > 0) {
+      await setMyPhotos([...myPhotoItems, ...newItems]);
+      switchToTab('photos');
+      await showWorkspace(false);
+    } else {
+      hideLoading();
+    }
+
+    if (warnings.length > 0) {
+      showPhotoWarning(warnings.join(' '));
+    }
   }
 
-  function readFileAsDataURL(file) {
+  function fileToDataURL(file) {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => resolve(e.target.result);
-      reader.onerror = (e) => reject(e);
-      reader.readAsDataURL(file);
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.naturalWidth * scale);
+        c.height = Math.round(img.naturalHeight * scale);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        resolve(c.toDataURL('image/jpeg', 0.85));
+      };
+      img.onerror = (e) => {
+        URL.revokeObjectURL(url);
+        reject(e);
+      };
+      img.src = url;
     });
   }
 
@@ -724,6 +811,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  myPhotoItems = await photoStore.load();
   await showWorkspace(sampleOn);
   updateDialAngle((5 * Math.PI) / 6);
 });

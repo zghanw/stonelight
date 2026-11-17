@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stonelight-v5';
+const CACHE_NAME = 'stonelight-v6';
 const ASSETS = [
   './',
   './index.html',
@@ -14,6 +14,7 @@ const ASSETS = [
   './js/shadowmap.js',
   './js/transcribe.js',
   './js/guide.js',
+  './js/photostore.js',
   './js/app.js',
   './sample/flash.jpg',
   './sample/torch_12.jpg',
